@@ -1,5 +1,6 @@
 const { response } = require("express")
 const planActionModel = require("../model/planActionModel")
+const responsableModel = require ("../model/responsableModel")
 module.exports = {
 
     createPlanAction: async (req, res) => {
@@ -12,6 +13,7 @@ module.exports = {
                 data: plan
 
             })
+    await responsableModel.findByIdAndUpdate(req.body.responsableId,{$push:{planId:plan._id}})
         }
         catch (err){
             res.status(400).json({
@@ -59,24 +61,44 @@ module.exports = {
         }
     },
 
-    deletePlan: async (req, res) => {
-        try {
-            const planId = req.params.id
-            const plan = await planActionModel.findByIdAndDelete(planId)
-            res.status(200).json({
-                success: true,
-                message: "plan deleted",
-                data: plan
-            })
-        }
-        catch {
-            res.status(400).json({
+deletePlan: async (req, res) => {
+    try {
+        const planId = req.params.id;
+
+        // Supprimer le plan
+        const plan = await planActionModel.findByIdAndDelete(planId);
+        if (!plan) {
+            return res.status(404).json({
                 success: false,
-                message: "plan not deleted",
+                message: "Plan not found",
                 data: null
-            })
+            });
         }
-    },
+
+        // Retirer le plan du responsable
+          await responsableModel.updateMany(
+                  { planId: planId }, // Sélectionner les utilisateurs ayant cette activité
+                  { $pull: { planId: planId } } // Retirer l'ID de l'activité du tableau
+              );
+      
+
+        // Répondre une seule fois après les deux opérations
+        res.status(200).json({
+            success: true,
+            message: "Plan deleted and removed from responsable",
+            data: plan
+        });
+
+    } catch (error) {
+        console.error("Error deleting plan:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            data: null
+        });
+    }
+},
+
 
     updatePlan: async (req, res) => {
     try {

@@ -1,5 +1,7 @@
 const { response } = require("express")
 const TacheModel = require("../model/tacheModel")
+const sousActModel = require("../model/sousActiviteModel")
+const userModel = require("../model/userModel")
 module.exports = {
 
     createTache: async (req, res) => {
@@ -10,12 +12,15 @@ module.exports = {
               }
             const tache = await TacheModel(req.body)
             await tache.save()
+            await userModel.findByIdAndUpdate(req.body.userId,{$push:{tacheId:tache._id}})
+            await sousActModel.findByIdAndUpdate(req.body.sousActiviteId,{$push:{tacheId:tache._id}})
             res.status(200).json({
                 success: true,
                 message: "data created",
                 data: tache
 
             })
+            
         }
         catch (err){
             res.status(400).json({
@@ -67,6 +72,21 @@ module.exports = {
         try {
             const tacheId = req.params.id
             const tache = await TacheModel.findByIdAndDelete(tacheId)
+              if (!tache) {
+            return res.status(404).json({
+                success: false,
+                message: "tache not found",
+                data: null
+            });
+        }
+          await sousActModel.updateMany(
+                    { tacheId: tacheId }, // Sélectionner les taches ayant cette sous activité
+                    { $pull: { tacheId: tacheId } } // Retirer l'ID de sous l'activité du tableau
+                );
+                await userModel.updateMany(
+                    { tacheId: tacheId }, // Sélectionner les taches ayant cette sous activité
+                    { $pull: { tacheId: tacheId } } // Retirer l'ID de sous activité du tableau
+                );
             res.status(200).json({
                 success: true,
                 message: "tache deleted",

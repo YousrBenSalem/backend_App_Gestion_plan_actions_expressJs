@@ -1,5 +1,7 @@
 const { response } = require("express")
 const activiteModel = require("../model/activiteModel")
+const userModel = require("../model/userModel")
+const planModel = require("../model/planActionModel")
 module.exports = {
 
     createActivite: async (req, res) => {
@@ -12,6 +14,9 @@ module.exports = {
                 data: activite
 
             })
+              await userModel.findByIdAndUpdate(req.body.userId,{$push:{activiteId:activite._id}})
+
+              await planModel.findByIdAndUpdate(req.body.planId,{$push:{activiteId:activite._id}})
         }
         catch (err){
             res.status(400).json({
@@ -59,24 +64,47 @@ module.exports = {
         }
     },
 
-    deleteActivite: async (req, res) => {
-        try {
-            const activiteId = req.params.id
-            const activite = await activiteModel.findByIdAndDelete(activiteId)
-            res.status(200).json({
-                success: true,
-                message: "activité deleted",
-                data: activite
-            })
-        }
-        catch {
-            res.status(400).json({
+deleteActivite: async (req, res) => {
+    try {
+        const activiteId = req.params.id;
+
+        // Trouver et supprimer l'activité
+        const activite = await activiteModel.findByIdAndDelete(activiteId);
+        if (!activite) {
+            return res.status(404).json({
                 success: false,
-                message: "activité not deleted",
+                message: "Activité not found",
                 data: null
-            })
+            });
         }
-    },
+
+        // Supprimer l'ID de l'activité dans tous les utilisateurs qui l'ont
+        await userModel.updateMany(
+            { activiteId: activiteId }, // Sélectionner les utilisateurs ayant cette activité
+            { $pull: { activiteId: activiteId } } // Retirer l'ID de l'activité du tableau
+        );
+
+          await planModel.updateMany(
+            { activiteId: activiteId }, // Sélectionner les utilisateurs ayant cette activité
+            { $pull: { activiteId: activiteId } } // Retirer l'ID de l'activité du tableau
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Activité deleted and removed from users and plan",
+            data: activite
+        });
+
+    } catch (error) {
+        console.error("Error deleting activity:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+            data: null
+        });
+    }
+},
+
 
     updateActivite: async (req, res) => {
     try {

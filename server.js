@@ -1,6 +1,7 @@
 const express = require ("express") 
 const env = require ("dotenv").config()
 const cors = require("cors");
+
 const port = 3000 
 const app = express ()
 const connectDB = require ("./db")
@@ -41,9 +42,19 @@ const personneRouter = require ("./routers/personneRouter")
 app.use("/personne",personneRouter)
 
 
-app.get('/:img',(req,res)=>{
+
+ app.get('/storage/:img',(req,res)=>{
     res.sendFile(__dirname+"/storage/"+req.params.img)
-})
+}) 
+/* app.get('/storage/:img', (req, res) => {
+    const imagePath = path.join(__dirname, "storage", req.params.img);
+    if (fs.existsSync(imagePath)) {
+        res.sendFile(imagePath);
+    } else {
+        res.status(404).send("Image non trouvée");
+    }
+}); */
+
 
 app.listen(port,function(){
     console.log(`the server is running with ${process.env.PORT} open at http://localhost:${process.env.PORT}`)

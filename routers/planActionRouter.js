@@ -1,13 +1,13 @@
 const planActionController = require ("../controller/planActionController")
 const route = require ("express").Router()
-const authentificationToken = require("../middleWare/authenticateToken")
+//const authentificationToken = require("../middleWare/authenticateToken")
 
 
-route.post("/add",authentificationToken ,planActionController.createPlanAction)
-route.get("/get",authentificationToken ,planActionController.getAllPlans)
-route.get("/get/:id",authentificationToken,planActionController.getPlanById)
-route.delete("/delete/:id",authentificationToken ,planActionController.deletePlan)
-route.put("/update/:id",authentificationToken ,planActionController.updatePlan)
+route.post("/add",planActionController.createPlanAction)
+route.get("/get",planActionController.getAllPlans)
+route.get("/get/:id",planActionController.getPlanById)
+route.delete("/delete/:id",planActionController.deletePlan)
+route.put("/update/:id",planActionController.updatePlan)
 
 
 

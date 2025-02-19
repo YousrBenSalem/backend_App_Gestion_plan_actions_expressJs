@@ -5,7 +5,15 @@ const sousActiviteSchema = new mongoose.Schema ({
     description : {type:String},
     Date_lancement : {type:String},
     etat: {type:String},
-    pourcentage_avancement : {type:Number},
+    //pourcentage_avancement : {type:Number},
+    activiteId : {
+            type : mongoose.Types.ObjectId,
+            ref: "activite"
+        },
+          tacheId : [{
+            type : mongoose.Types.ObjectId,
+            ref: "tache"
+        }],
 })
 
 

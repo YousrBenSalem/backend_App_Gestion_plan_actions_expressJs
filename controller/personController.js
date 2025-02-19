@@ -15,7 +15,7 @@ let refreshTokens = []
 
 module.exports = {
 
- verify : async (req, res) => {
+/*  verify : async (req, res) => {
     try {
         const verifyCode = await userModel.findOne({ code: req.params.code });
         verifyCode.code = undefined;//supprimer
@@ -26,7 +26,28 @@ module.exports = {
 
         return res.sendFile(join(__dirname + "../../template/error.html"));
     }
+}, */
+
+verify: async (req, res) => {
+    try {
+        const verifyCode = await userModel.findOne({ code: req.params.code });
+
+        if (!verifyCode) {
+            return res.sendFile(join(__dirname + "../../template/error.html"));
+        }
+
+        // Mise à jour sans déclencher `pre("save")`
+        await userModel.updateOne(
+            { _id: verifyCode._id },
+            { $unset: { code: "" }, $set: { verify: true } }
+        );
+
+        return res.sendFile(join(__dirname + "../../template/sucess.html"));
+    } catch (err) {
+        return res.sendFile(join(__dirname + "../../template/error.html"));
+    }
 },
+
 
 login : async (req,res) => {
     try {

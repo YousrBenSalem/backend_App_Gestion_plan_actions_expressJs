@@ -1,5 +1,6 @@
 const { response } = require("express")
 const sousActiviteModel = require("../model/sousActiviteModel")
+const activiteModel = require("../model/activiteModel")
 module.exports = {
 
     createSousActivite: async (req, res) => {
@@ -12,6 +13,7 @@ module.exports = {
                 data: sousActivite
 
             })
+              await activiteModel.findByIdAndUpdate(req.body.activiteId,{$push:{sousActiviteId:sousActivite._id}})
         }
         catch (err){
             res.status(400).json({
@@ -63,9 +65,20 @@ module.exports = {
         try {
             const sousActiviteId = req.params.id
             const sousActivite = await sousActiviteModel.findByIdAndDelete(sousActiviteId)
+  if (!sousActivite) {
+            return res.status(404).json({
+                success: false,
+                message: "sous Activité not found",
+                data: null
+            });
+        }
+  await activiteModel.updateMany(
+            { sousActiviteId: sousActiviteId }, // Sélectionner les utilisateurs ayant cette activité
+            { $pull: { sousActiviteId: sousActiviteId } } // Retirer l'ID de l'activité du tableau
+        );
             res.status(200).json({
                 success: true,
-                message: "sous activité deleted",
+                message: "sous activité deleted and removed from activite",
                 data: sousActivite
             })
         }

@@ -1,5 +1,6 @@
 const { response } = require("express")
 const structureModel = require("../model/structureModel")
+const planModel = require("../model/planActionModel")
 module.exports = {
 
     createStructure: async (req, res) => {
@@ -12,6 +13,9 @@ module.exports = {
                 data: structure
 
             })
+
+            await planModel.findByIdAndUpdate(req.body.planId,{$push:{structureId:structure._id}})
+            
         }
         catch (err){
             res.status(400).json({
@@ -63,9 +67,20 @@ module.exports = {
         try {
             const structureId = req.params.id
             const structure = await structureModel.findByIdAndDelete(structureId)
+              if (!structure) {
+            return res.status(404).json({
+                success: false,
+                message: "structure not found",
+                data: null
+            });
+        }
+              await planModel.updateMany(
+                          { structureId: structureId }, // Sélectionner les utilisateurs ayant cette activité
+                          { $pull: { structureId: structureId } } // Retirer l'ID de l'activité du tableau
+                      );
             res.status(200).json({
                 success: true,
-                message: "structure deleted",
+                message: "structure deleted and removed from plan",
                 data: structure
             })
         }

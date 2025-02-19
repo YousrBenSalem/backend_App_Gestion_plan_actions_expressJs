@@ -5,6 +5,18 @@ const tacheSchema = new mongoose.Schema ({
     description : {type:String},
     avancement : {type:String},
     pieceJointe :{type:String},
+    periorite :{type:String},
+    etat_validation :{type:String},
+    sousActiviteId : {
+                type : mongoose.Types.ObjectId,
+                ref: "sousActivite"
+            },
+    userId : {
+                type : mongoose.Types.ObjectId,
+                ref: "user"
+            },
+
+
   
 })
 

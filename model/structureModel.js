@@ -2,7 +2,15 @@ const mongoose = require ("mongoose")
 
 const structureSchema = new mongoose.Schema ({
     nom : {type:String}, 
-    abréviation : {type:String},
+    lieu : {type:String},
+      planId : {
+                type : mongoose.Types.ObjectId,
+                ref: "plan"
+            },
+            secteurId : {
+                type : mongoose.Types.ObjectId,
+                ref: "secteur"
+            },
     
 
 })

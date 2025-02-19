@@ -4,11 +4,11 @@ const authentificationToken = require("../middleWare/authenticateToken")
 
 
 
-route.post("/add",authentificationToken ,activiteController.createActivite)
-route.get("/get",authentificationToken, activiteController.getAllActivites)
-route.get("/get/:id",authentificationToken ,activiteController.getActiviteById)
-route.delete("/delete/:id",authentificationToken, activiteController.deleteActivite)
-route.put("/update/:id",authentificationToken,activiteController.updateActivite)
+route.post("/add" ,activiteController.createActivite)
+route.get("/get", activiteController.getAllActivites)
+route.get("/get/:id" ,activiteController.getActiviteById)
+route.delete("/delete/:id", activiteController.deleteActivite)
+route.put("/update/:id",activiteController.updateActivite)
 
 
 
