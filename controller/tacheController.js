@@ -1,7 +1,6 @@
 const { response } = require("express")
 const TacheModel = require("../model/tacheModel")
 const sousActModel = require("../model/sousActiviteModel")
-const userModel = require("../model/userModel")
 module.exports = {
 
     createTache: async (req, res) => {
@@ -12,7 +11,6 @@ module.exports = {
               }
             const tache = await TacheModel(req.body)
             await tache.save()
-            await userModel.findByIdAndUpdate(req.body.userId,{$push:{tacheId:tache._id}})
             await sousActModel.findByIdAndUpdate(req.body.sousActiviteId,{$push:{tacheId:tache._id}})
             res.status(200).json({
                 success: true,
@@ -83,10 +81,7 @@ module.exports = {
                     { tacheId: tacheId }, // Sélectionner les taches ayant cette sous activité
                     { $pull: { tacheId: tacheId } } // Retirer l'ID de sous l'activité du tableau
                 );
-                await userModel.updateMany(
-                    { tacheId: tacheId }, // Sélectionner les taches ayant cette sous activité
-                    { $pull: { tacheId: tacheId } } // Retirer l'ID de sous activité du tableau
-                );
+            
             res.status(200).json({
                 success: true,
                 message: "tache deleted",
