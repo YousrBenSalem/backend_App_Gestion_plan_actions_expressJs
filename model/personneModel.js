@@ -14,8 +14,19 @@ const personneSchema = new mongoose.Schema ({
     code: {type: String},
 
 },baseOptions)
- personneSchema.pre("save", async function(){
-    const salt = await bcrypt.genSalt(10)
-    this.password = await bcrypt.hash(this.password,salt)
-}) 
+personneSchema.pre("save", async function (next) {
+    try {
+        if (!this.isModified("password")) return next(); // ✅ Ne pas re-hasher si le mot de passe n'a pas changé
+
+        if (!this.password) {
+            throw new Error("Le mot de passe est obligatoire !");
+        }
+
+        const saltRounds = 10;
+        this.password = await bcrypt.hash(this.password, saltRounds); // ✅ Hasher correctement
+        next();
+    } catch (error) {
+        next(error); // ✅ Gérer les erreurs correctement
+    }
+});
 module.exports=mongoose.model ("personne",personneSchema)

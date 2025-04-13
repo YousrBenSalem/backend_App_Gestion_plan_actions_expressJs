@@ -119,7 +119,7 @@ else {
         to : user.email,
         subject : "sending emails",
         text : "test",
-        html:`<b> click here to take your token</b>,<a href=http://localhost:3000/${generateAccessToken}>clic</a>`
+        html:`<b> click here to take your token</b>,<a href=http://localhost:3001/reset/${generateAccessToken}>clic</a>`
     })
     res.status(200).json({
         success:true,

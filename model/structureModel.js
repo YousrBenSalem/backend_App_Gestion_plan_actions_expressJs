@@ -3,10 +3,10 @@ const mongoose = require ("mongoose")
 const structureSchema = new mongoose.Schema ({
     nom : {type:String}, 
     lieu : {type:String},
-      planId : {
+      planId : [{
                 type : mongoose.Types.ObjectId,
                 ref: "plan"
-            },
+            }],
             secteurId : {
                 type : mongoose.Types.ObjectId,
                 ref: "secteur"

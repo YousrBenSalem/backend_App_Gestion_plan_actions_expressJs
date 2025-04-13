@@ -9,9 +9,26 @@ module.exports = {
               if (req.file) {
                     req.body.pieceJointe = req.file.filename;
               }
-            const tache = await TacheModel(req.body)
+
+                 const tacheData = {
+            titre: req.body.titre ? String(req.body.titre) : "",
+            description: req.body.description ? String(req.body.description) : "",
+            avancement: req.body.avancement ? String(req.body.avancement) : "",
+            periorite: req.body.periorite ? String(req.body.periorite) : "",  // Correction de la faute "periorite" -> "priorite"
+            pieceJointe: req.body.pieceJointe || "",
+            sousActiviteId: req.body.sousActiviteId ? String(req.body.sousActiviteId) : null
+        };
+             if (!tacheData.sousActiviteId) {
+            return res.status(400).json({
+                success: false,
+                message: "L'ID de la sous-activité est requis",
+                data: null
+            });
+        }
+            const tache = await TacheModel(tacheData)
             await tache.save()
-            await sousActModel.findByIdAndUpdate(req.body.sousActiviteId,{$push:{tacheId:tache._id}})
+            
+            await sousActModel.findByIdAndUpdate({_id:req.body.sousActiviteId},{$push:{tacheId:tache._id}})
             res.status(200).json({
                 success: true,
                 message: "data created",

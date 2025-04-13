@@ -1,9 +1,11 @@
 const { response } = require("express")
 const planActionModel = require("../model/planActionModel")
 const responsableModel = require ("../model/responsableModel")
+const structureModel = require ("../model/structureModel")
+
 module.exports = {
 
-    createPlanAction: async (req, res) => {
+/*     createPlanAction: async (req, res) => {
         try {
             const plan = await planActionModel(req.body)
             await plan.save()
@@ -13,7 +15,9 @@ module.exports = {
                 data: plan
 
             })
-    await responsableModel.findByIdAndUpdate(req.body.responsableId,{$push:{planId:plan._id}})
+    await structureModel.findByIdAndUpdate({_id:req.body.structureId},{$push:{planId:plan._id}})
+
+    await responsableModel.findByIdAndUpdate({_id:req.body.responsableId},{$push:{planId:plan._id}})
         }
         catch (err){
             res.status(400).json({
@@ -22,11 +26,46 @@ module.exports = {
                 data: null
             })
         }
-    },
+    }, */
+
+    createPlanAction: async (req, res) => {
+    try {
+        const plan = new planActionModel(req.body);
+        await plan.save();
+
+        // Attendre que les mises à jour soient terminées
+        await Promise.all([
+            structureModel.findByIdAndUpdate(
+                { _id: req.body.structureId },
+                { $push: { planId: plan._id } }
+            ),
+            responsableModel.findByIdAndUpdate(
+                { _id: req.body.responsableId },
+                { $push: { planId: plan._id } }
+            )
+        ]);
+
+        // Envoyer la réponse après toutes les opérations réussies
+        res.status(200).json({
+            success: true,
+            message: "Data created successfully",
+            data: plan
+        });
+    } catch (err) {
+        console.error(err);
+        if (!res.headersSent) { // Vérifier si la réponse n'a pas encore été envoyée
+            res.status(400).json({
+                success: false,
+                message: "Failed to create: " + err.message,
+                data: null
+            });
+        }
+    }
+},
 
     getAllPlans: async (req, res) => {
         try {
-            const plans = await planActionModel.find()
+            const plans = await planActionModel.find().populate("activiteId")
             res.status(200).json({
                 success: true,
                 message: "plans found",
@@ -75,6 +114,10 @@ deletePlan: async (req, res) => {
             });
         }
 
+    await structureModel.updateMany(
+                  { planId: planId }, // Sélectionner les utilisateurs ayant cette activité
+                  { $pull: { planId: planId } } // Retirer l'ID de l'activité du tableau
+              );
         // Retirer le plan du responsable
           await responsableModel.updateMany(
                   { planId: planId }, // Sélectionner les utilisateurs ayant cette activité

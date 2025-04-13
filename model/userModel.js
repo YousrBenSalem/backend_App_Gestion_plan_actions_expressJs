@@ -5,16 +5,15 @@ const userSchema = new mongoose.Schema ({
     prenom : {type:String}, 
     image : {type :String},
     adresse:{type:String},
+    status:{type:String , default:"pending"},
+
     fonction:{type:String},
     telephone:{type:String},
     activiteId : [{
             type : mongoose.Types.ObjectId,
             ref:"activite"
         }],
-    tacheId : [{
-            type : mongoose.Types.ObjectId,
-            ref:"tache"
-        }]
+
 
     
 

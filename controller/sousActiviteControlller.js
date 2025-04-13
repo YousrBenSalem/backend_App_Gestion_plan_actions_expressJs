@@ -13,7 +13,7 @@ module.exports = {
                 data: sousActivite
 
             })
-              await activiteModel.findByIdAndUpdate(req.body.activiteId,{$push:{sousActiviteId:sousActivite._id}})
+              await activiteModel.findByIdAndUpdate({_id:req.body.activiteId},{$push:{sousActiviteId:sousActivite._id}})
         }
         catch (err){
             res.status(400).json({
@@ -26,7 +26,7 @@ module.exports = {
 
     getAllSousActivites: async (req, res) => {
         try {
-            const sousActivites = await sousActiviteModel.find()
+            const sousActivites = await sousActiviteModel.find();
             res.status(200).json({
                 success: true,
                 message: "sous Activites found",

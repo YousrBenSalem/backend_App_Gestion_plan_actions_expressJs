@@ -3,8 +3,9 @@ const mongoose = require ("mongoose")
 const sousActiviteSchema = new mongoose.Schema ({
     titre : {type:String}, 
     description : {type:String},
+
     Date_lancement : {type:String},
-    etat: {type:String},
+    etat: {type:String , default:"To Do"},
     //pourcentage_avancement : {type:Number},
     activiteId : {
             type : mongoose.Types.ObjectId,

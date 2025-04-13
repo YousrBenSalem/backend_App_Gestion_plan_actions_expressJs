@@ -15,10 +15,10 @@ const planSchema = new mongoose.Schema ({
         type : mongoose.Types.ObjectId,
         ref: "activite"
     }],
-          structureId : [{
+    structureId : {
         type : mongoose.Types.ObjectId,
         ref: "structure"
-    }],
+    },
 
 
   

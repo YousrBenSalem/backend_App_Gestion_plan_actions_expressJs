@@ -4,32 +4,67 @@ const userModel = require("../model/userModel")
 const planModel = require("../model/planActionModel")
 module.exports = {
 
-    createActivite: async (req, res) => {
-        try {
-            const activite = await activiteModel(req.body)
-            await activite.save()
-            res.status(200).json({
-                success: true,
-                message: "data created",
-                data: activite
+    // createActivite: async (req, res) => {
+    //     try {
+    //         const activite = await activiteModel(req.body)
+    //         await activite.save()
+    //         res.status(200).json({
+    //             success: true,
+    //             message: "data created",
+    //             data: activite
 
-            })
-              await userModel.findByIdAndUpdate(req.body.userId,{$push:{activiteId:activite._id}})
+    //         })
+    //           await userModel.findByIdAndUpdate({_id:req.body.userId},{$push:{activiteId:activite._id}})
 
-              await planModel.findByIdAndUpdate(req.body.planId,{$push:{activiteId:activite._id}})
-        }
-        catch (err){
+    //           await planModel.findByIdAndUpdate({_id:req.body.planId},{$push:{activiteId:activite._id}})
+    //     }
+    //     catch (err){
+    //         res.status(400).json({
+    //             success: false,
+    //             message: "failed to create"+err,
+    //             data: null
+    //         })
+    //     }
+    // },
+createActivite: async (req, res) => {
+    try {
+        const activite = new activiteModel(req.body);
+        await activite.save();
+
+        // Attendre que les mises à jour soient terminées avant d'envoyer la réponse
+        await Promise.all([
+            userModel.findByIdAndUpdate(
+                { _id: req.body.userId },
+                { $push: { activiteId: activite._id } }
+            ),
+            planModel.findByIdAndUpdate(
+                { _id: req.body.planId },
+                { $push: { activiteId: activite._id } }
+            )
+        ]);
+
+        // Envoyer la réponse après toutes les opérations réussies
+        res.status(200).json({
+            success: true,
+            message: "Data created successfully",
+            data: activite
+        });
+    } catch (err) {
+        console.error(err);
+        if (!res.headersSent) { // Vérifier si la réponse n'a pas encore été envoyée
             res.status(400).json({
                 success: false,
-                message: "failed to create"+err,
+                message: "Failed to create: " + err.message,
                 data: null
-            })
+            });
         }
-    },
+    }
+},
 
     getAllActivites: async (req, res) => {
         try {
-            const activites = await activiteModel.find()
+            const activites = await activiteModel.find().populate("userId")
+          //  console.log(participantId)
             res.status(200).json({
                 success: true,
                 message: "activites found",

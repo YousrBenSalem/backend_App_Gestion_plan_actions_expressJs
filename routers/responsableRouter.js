@@ -5,10 +5,10 @@ const authentificationToken = require("../middleWare/authenticateToken")
 
 
 route.post("/add",upload.single("image"),responsableController.createResponsable)
-route.get("/get",authentificationToken,responsableController.getAllRespos)
-route.get("/get/:id",authentificationToken ,responsableController.getRespById)
-route.delete("/delete/:id",authentificationToken ,responsableController.deleteRespo)
-route.put("/update/:id",authentificationToken ,upload.single("image"),responsableController.updateRespo)
+route.get("/get",responsableController.getAllRespos)
+route.get("/get/:id" ,responsableController.getRespById)
+route.delete("/delete/:id" ,responsableController.deleteRespo)
+route.put("/update/:id" ,upload.single("image"),responsableController.updateRespo)
 
 
 

@@ -4,12 +4,11 @@ const authentificationToken = require("../middleWare/authenticateToken")
 const validateAttribut = require ("../middleWare/validate")
 
 
-route.post("/add",validateAttribut(["titre","description","Date_lancement"]),authentificationToken,sousActiviteController.createSousActivite)
-route.get("/get",authentificationToken,sousActiviteController.getAllSousActivites)
-route.get("/get/:id",authentificationToken,sousActiviteController.getSousActiviteById)
-route.delete("/delete/:id",authentificationToken,sousActiviteController.deleteSousActivite)
-route.put("/update/:id",authentificationToken,sousActiviteController.updateSousActivite)
-
+route.post("/add",validateAttribut(["titre","description","Date_lancement"]),sousActiviteController.createSousActivite)
+route.get("/get",sousActiviteController.getAllSousActivites)
+route.get("/get/:id",sousActiviteController.getSousActiviteById)
+route.delete("/delete/:id",sousActiviteController.deleteSousActivite)
+route.put("/update/:id",sousActiviteController.updateSousActivite)
 
 
 
