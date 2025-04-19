@@ -167,7 +167,8 @@ module.exports = {
             req.body.image = existingRespo.image; 
         }
 
-
+  console.log("🔍 Champs reçus:", req.body);
+  console.log("🖼️ Fichier reçu:", req.file);
           const respo = await responsableModel.findByIdAndUpdate(respoId,req.body,{new:true})
           res.status(200).json({
               success:true,
